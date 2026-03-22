@@ -16,6 +16,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+import textwrap
 
 
 # ─── Feature weights ──────────────────────────────────────────────────
@@ -174,3 +175,41 @@ def predict_with_model(model, df_filtered: pd.DataFrame) -> pd.Series:
     """Use the trained model to predict labels for new/filtered data."""
     X = df_filtered[SCORE_FEATURES].values
     return pd.Series(model.predict(X), index=df_filtered.index, name="ML Prediction")
+
+
+# ─── Generative Component ─────────────────────────────────────────────
+
+class GenerativeReport:
+    """
+    Simulates a Generative AI module that creates personalized advice 
+    for students based on their top college recommendations.
+    """
+    
+    @staticmethod
+    def generate_summary(student_name, top_colleges: pd.DataFrame) -> str:
+        """Generate a narrative summary for the top 3 recommendations."""
+        if top_colleges.empty:
+            return "No colleges found matching your criteria."
+            
+        summary = f"\n📝  PERSONALIZED ADVICE FOR {student_name.upper()}\n"
+        summary += "=" * 50 + "\n"
+        
+        for i, (idx, row) in enumerate(top_colleges.head(3).iterrows(), 1):
+            college = row['College Name']
+            branch = row['Branch Offered']
+            score = row['Final Score']
+            placement = row['Placement Rate (%)']
+            lpa = row['Average Package (LPA)']
+            
+            blurb = (
+                f"Rank {i}: {college} ({branch}). With an overall score of {score:.1f}, "
+                f"this institution is a strong contender. We highlight its {placement}% placement rate "
+                f"and an impressive average package of {lpa} LPA. Based on its Faculty Rating of "
+                f"{row['Faculty Rating (1-10)']}/10, you can expect high-quality mentorship."
+            )
+            summary += "\n" + "\n".join(textwrap.wrap(blurb, width=70)) + "\n"
+            
+        summary += "\n" + "=" * 50
+        summary += "\nFinal Tip: Focus on colleges with high 'Student Satisfaction' titles."
+        
+        return summary

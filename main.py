@@ -31,8 +31,10 @@ from recommendation_engine import (
     train_ml_model,
     predict_with_model,
     SCORE_FEATURES,
+    GenerativeReport,
 )
 from visualizations import generate_all_charts
+from deep_learning_model import train_deep_learning_model, predict_nn
 
 # ─── Constants ────────────────────────────────────────────────────────
 DATASET_PATH = os.path.join(
@@ -62,7 +64,8 @@ DISPLAY_COLS = [
     "Location Score (1-10)",
     "Student Satisfaction Rating (1-10)",
     "Final Score",
-    "Recommendation",
+    "RF Prediction",
+    "NN Prediction",
 ]
 
 
@@ -154,8 +157,12 @@ def main():
     # 2. Train ML model on full data
     print("\n🤖 Training RandomForest classification model…")
     model, report = train_ml_model(df)
-    print("   Classification Report (on 25 % hold-out):\n")
-    print(report)
+    
+    print("\n🧠 Training Keras Deep Learning model (Neural Network)…")
+    # We use the same features for the NN
+    nn_model, le = train_deep_learning_model(df, SCORE_FEATURES)
+    
+    print("\n✅ All models trained successfully.")
 
     # 3. Get user preferences
     if args.branch:
@@ -177,8 +184,9 @@ def main():
         print("😔 No colleges matched your criteria. Try relaxing filters.")
         sys.exit(0)
 
-    # 5. Also attach ML predictions for comparison
-    results["ML Prediction"] = predict_with_model(model, results).values
+    # 5. Attach ML & DL predictions for comparison
+    results["RF Prediction"] = predict_with_model(model, results).values
+    results["NN Prediction"] = predict_nn(nn_model, le, results[SCORE_FEATURES].values)
 
     # 6. Display results
     _print_table(results)
@@ -188,6 +196,13 @@ def main():
     print("\n🎨 Generating visualisations…")
     chart_paths = generate_all_charts(results, top_n=min(10, len(results)))
     print(f"\n✅ Done!  {len(chart_paths)} charts saved to the output/ folder.")
+
+    # 8. Generative AI Summary
+    print("\n🤖 Generating Personalised Guidance Summary…")
+    # Use Nishal KV as default if not specified
+    student_name = "Nishal KV" 
+    gen_summary = GenerativeReport.generate_summary(student_name, results)
+    print(gen_summary)
 
 
 if __name__ == "__main__":

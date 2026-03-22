@@ -22,8 +22,9 @@ def build_nn_model(input_shape, num_classes):
     """Simple Feed-Forward Neural Network for Classification."""
     model = models.Sequential([
         layers.Input(shape=(input_shape,)),
+        layers.Dense(128, activation='relu'),
+        layers.Dropout(0.3),
         layers.Dense(64, activation='relu'),
-        layers.Dropout(0.2),
         layers.Dense(32, activation='relu'),
         layers.Dense(num_classes, activation='softmax')
     ])

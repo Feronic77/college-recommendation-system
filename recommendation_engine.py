@@ -44,10 +44,10 @@ def _normalise(df: pd.DataFrame) -> pd.DataFrame:
 
 def _compute_weighted_score(df_norm: pd.DataFrame) -> pd.Series:
     """Return the weighted composite score as a Series."""
-    score = pd.Series(0.0, index=df_norm.index)
-    for feat, w in FEATURE_WEIGHTS.items():
-        score += df_norm[feat] * w
-    return round(score * 100, 2)          # scale to 0-100
+    weighted_sum = pd.Series(0.0, index=df_norm.index)
+    for feat, weight in FEATURE_WEIGHTS.items():
+        weighted_sum += df_norm[feat] * weight
+    return round(weighted_sum * 100, 2)          # Scale to 0-100 percentage
 
 
 def _assign_labels(scores: pd.Series) -> pd.Series:

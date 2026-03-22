@@ -72,9 +72,11 @@ DISPLAY_COLS = [
 # ─── Helpers ──────────────────────────────────────────────────────────
 
 def _banner():
-    print("\n" + "=" * 65)
-    print("   🎓  ENGINEERING COLLEGE RECOMMENDATION SYSTEM  🎓")
-    print("=" * 65)
+    print("\n" + " ✨ " + "=" * 60 + " ✨ ")
+    print("   🎓  ENGINEERING COLLEGE RECOMMENDATION SYSTEM v2.0  🎓")
+    print("   " + "─" * 65)
+    print("   Enhanced with Machine Learning & Gen-AI | Nishal KV #67")
+    print(" ✨ " + "=" * 60 + " ✨ ")
 
 
 def _print_table(df: pd.DataFrame, max_rows: int = 15):
